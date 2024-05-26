@@ -284,7 +284,7 @@ def portfolio_volatility(weights, covmat):
     return volatility
 
 
-def plot_ef2(n_points, expected_returns, cov):
+def plot_ef2(n_points, expected_returns, cov, style):
     """
     Plots the 2-asset efficient frontier
     """
@@ -297,7 +297,7 @@ def plot_ef2(n_points, expected_returns, cov):
         "Returns": rets, 
         "Volatility": volatilities
     })
-    return ef.plot.line(x="Volatility", y="Returns", style=".-")
+    return ef.plot.line(x="Volatility", y="Returns", style=style)
 
 
 def minimize_volatility(target_return, expected_returns, cov):
