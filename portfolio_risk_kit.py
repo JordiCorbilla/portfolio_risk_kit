@@ -802,3 +802,16 @@ def match_durations(cf_t, cf_s, cf_l, discount_rate):
     d_s = macaulay_duration(cf_s, discount_rate)
     d_l = macaulay_duration(cf_l, discount_rate)
     return (d_l - d_t)/(d_l - d_s)
+
+def bond_total_return(monthly_prices, principal, coupon_rate, coupons_per_year):
+    """
+    Computes the total return of a Bond based on monthly bond prices and coupon payments
+    Assumes that dividends (coupons) are paid out at the end of the period (e.g. end of 3 months for quarterly div)
+    and that dividends are reinvested in the bond
+    """
+    coupons = pd.DataFrame(data = 0, index=monthly_prices.index, columns=monthly_prices.columns)
+    t_max = monthly_prices.index.max()
+    pay_date = np.linspace(12/coupons_per_year, t_max, int(coupons_per_year*t_max/12), dtype=int)
+    coupons.iloc[pay_date] = principal*coupon_rate/coupons_per_year
+    total_returns = (monthly_prices + coupons)/monthly_prices.shift()-1
+    return total_returns.dropna()
