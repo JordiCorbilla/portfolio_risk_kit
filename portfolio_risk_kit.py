@@ -969,3 +969,38 @@ def macaulay_duration_v2(cash_flows, yield_rate, freq):
     total_present_value = sum(present_values)
     
     return weighted_sum / total_present_value
+
+
+def macaulay_duration_v3(cash_flows, yield_rate, freq):
+    """Calculate the Macaulay Duration and output the detailed table"""
+    n = len(cash_flows)
+    times = np.arange(1, n + 1) / freq
+    discount_factors = discount(times, yield_rate).values.flatten()
+    present_values = cash_flows * discount_factors
+    total_present_value = sum(present_values)
+    weights = present_values / total_present_value
+    weighted_average_times = times * weights
+    
+    # Create the DataFrame
+    df = pd.DataFrame({
+        't': times,
+        'df': discount_factors,
+        'cf': cash_flows,
+        'pv': present_values,
+        'weight': weights,
+        'wat': weighted_average_times
+    })
+    
+    # Add the totals row
+    totals = pd.DataFrame({
+        't': ['Total'],
+        'df': [''],
+        'cf': [sum(cash_flows)],
+        'pv': [total_present_value],
+        'weight': [sum(weights)],
+        'wat': [sum(weighted_average_times)]
+    })
+    
+    df = pd.concat([df, totals], ignore_index=True)
+    
+    return df
