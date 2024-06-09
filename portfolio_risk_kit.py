@@ -942,3 +942,30 @@ def drawdown_allocator(psp_r, ghp_r, maxdd, m=3):
         peak_value = np.maximum(peak_value, account_value) ### For MaxDD
         w_history.iloc[step] = psp_w
     return w_history
+
+def bond_cash_flows_v2(n_periods, par, coupon_rate, freq):
+    """Generate bond cash flows"""
+    coupon = par * coupon_rate / freq
+    cash_flows = np.full(n_periods, coupon)
+    cash_flows[-1] += par
+    return cash_flows
+
+def bond_price_v2(cash_flows, yield_rate, freq):
+    """Calculate the price of the bond"""
+    n = len(cash_flows)
+    times = np.arange(1, n + 1) / freq
+    discount_factors = discount(times, yield_rate).values.flatten()
+    present_values = cash_flows * discount_factors
+    return sum(present_values)
+
+def macaulay_duration_v2(cash_flows, yield_rate, freq):
+    """Calculate the Macaulay Duration"""
+    n = len(cash_flows)
+    times = np.arange(1, n + 1) / freq
+    discount_factors = discount(times, yield_rate).values.flatten()
+    present_values = cash_flows * discount_factors
+    
+    weighted_sum = sum(times * present_values)
+    total_present_value = sum(present_values)
+    
+    return weighted_sum / total_present_value
