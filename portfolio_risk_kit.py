@@ -943,6 +943,15 @@ def drawdown_allocator(psp_r, ghp_r, maxdd, m=3):
         w_history.iloc[step] = psp_w
     return w_history
 
+def discount_v2(t, r, freq):
+    """
+    Compute the price of a pure discount bond that pays a dollar at time period t
+    and r is the per-period interest rate
+    returns a DataFrame indexed by t
+    """
+    discounts = pd.DataFrame([(1 + r / freq) ** -(t * freq) for t in t], index=t, columns=['df'])
+    return discounts
+
 def bond_cash_flows_v2(n_periods, par, coupon_rate, freq):
     """Generate bond cash flows"""
     coupon = par * coupon_rate / freq
@@ -975,7 +984,7 @@ def macaulay_duration_v3(cash_flows, yield_rate, freq):
     """Calculate the Macaulay Duration and output the detailed table"""
     n = len(cash_flows)
     times = np.arange(1, n + 1) / freq
-    discount_factors = discount(times, yield_rate).values.flatten()
+    discount_factors = discount_v2(times, yield_rate, freq).values.flatten()
     present_values = cash_flows * discount_factors
     total_present_value = sum(present_values)
     weights = present_values / total_present_value
